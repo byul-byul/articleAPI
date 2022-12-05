@@ -4,17 +4,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class ArticleService {
-    public List<Article> getArticleList(ArticleRepository articleRepository) {
+    private final ArticleRepository articleRepository;
+    public ArticleService(ArticleRepository articleRepository) {
+        this.articleRepository = articleRepository;
+    }
+    public List<Article> getArticleList() {
         return articleRepository.findAll();
     }
-
-    public void addArticle(@RequestBody ArticleController.NewArticleRequest request,
-                           ArticleRepository articleRepository) {
+    public void addArticle(@RequestBody ArticleController.NewArticleRequest request) {
         Article article = new Article();
         article.setAuthor(request.getAuthor());
         article.setContent(request.getContent());
@@ -23,14 +24,12 @@ public class ArticleService {
         articleRepository.save(article);
     }
 
-    public void deleteArticle(@PathVariable("articleId") Long id,
-                              ArticleRepository articleRepository) {
+    public void deleteArticle(@PathVariable("articleId") Long id) {
         articleRepository.deleteById(id);
     }
 
     public void updateArticle(@PathVariable("articleId") Long id,
-                              @RequestBody Article request,
-                              ArticleRepository articleRepository) {
+                              @RequestBody Article request) {
         Article article = articleRepository.getReferenceById(id);
         article.setAuthor(request.getAuthor());
         article.setContent(request.getContent());
