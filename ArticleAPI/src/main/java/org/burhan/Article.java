@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
+@Table(name="articles")
 public class Article {
     @Id
     @SequenceGenerator(
@@ -16,13 +17,16 @@ public class Article {
             generator = "article_id_sequence"
     )
     private Long            id;
+    
+    @Column(name="article_title", length=100, nullable=false, unique=false)
     private String          title;
+    @Column(name="article_author", nullable=false, unique=false)
     private String          author;
+    @Column(name="article_content", columnDefinition="TEXT", nullable=false, unique=false)
     private String          content;
+    @Column(name="publsih_date", nullable=false, unique=false)
     private LocalDate date;
-
     public Article() {}
-
     public Article(String title,
                    String author,
                    String content,
