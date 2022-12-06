@@ -59,16 +59,37 @@ public class ArticleController {
     public String getArticleCount() {
         List<Article> articleListForSort = articleService.getArticleList();
         LocalDateTime currentDateTime = LocalDateTime.now();
+        Integer[] articleCountByDays = new Integer[COMPARE_MAX_DAY_COUNT];
+        String msgTail = "";
         int count = 0;
+//        for (Article article : articleListForSort) {
+//            if (Duration.between(article.getDate(), currentDateTime).toDays()
+//                    >= COMPARE_MIN_DAY_COUNT
+//                    && Duration.between(article.getDate(), currentDateTime).toDays()
+//                    < COMPARE_MAX_DAY_COUNT) {
+//                count++;
+//            }
+//        }
+//        return "" + count;
+        for (int i = 0; i < COMPARE_MAX_DAY_COUNT; i++) {
+            articleCountByDays[i] = 0;
+        }
         for (Article article : articleListForSort) {
-            if (Duration.between(article.getDate(), currentDateTime).toDays()
-                    >= COMPARE_MIN_DAY_COUNT
-                    && Duration.between(article.getDate(), currentDateTime).toDays()
-                    < COMPARE_MAX_DAY_COUNT) {
-                count++;
+            for (int i = 0; i < COMPARE_MAX_DAY_COUNT; i++){
+                if (Duration.between(article.getDate(), currentDateTime).toDays() == i) {
+                    articleCountByDays[i]++;
+                    count++;
+                    break ;
+                }
             }
         }
-        return (DEFAULT_STATISTICS_MSG + count);
+        for (int i = 0; i < COMPARE_MAX_DAY_COUNT; i++) {
+            msgTail += "at " + currentDateTime.toLocalDate().minusDays(i)
+                        + " was published: "
+                        + articleCountByDays[i] + "\n";
+        }
+        msgTail += "total count of published articles: " + count;
+        return (DEFAULT_STATISTICS_MSG + msgTail);
     }
     @PostMapping()
     public void addArticle(@RequestBody NewArticleRequest request) {

@@ -13,6 +13,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/articledb
     username: postgres
     password: postgres
+#  sql:
+#    init:
+#      mode: always
+#      data-locations: classpath:./
   jpa:
     hibernate:
       ddl-auto: create-drop

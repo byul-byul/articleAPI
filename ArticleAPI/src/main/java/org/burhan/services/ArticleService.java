@@ -28,12 +28,10 @@ public class ArticleService {
         return articleRepository.findAll();
     }
     public ResponseEntity<Map<String, Object>> getPagedArticleList(int page) {
-        List<Article> articlList = new ArrayList<Article>();
         Pageable paging = PageRequest.of(page, ARTICLE_NUMBER_IN_PAGE);
         return getMapResponseEntity(paging);
     }
     public ResponseEntity<Map<String, Object>> getPagedArticleList() {
-        List<Article> articlList = new ArrayList<Article>();
         Pageable paging = PageRequest.of(DEFAULT_PAGE_NUMBER, ARTICLE_NUMBER_IN_PAGE);
         return getMapResponseEntity(paging);
     }
