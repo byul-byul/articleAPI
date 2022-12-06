@@ -1,4 +1,4 @@
-package org.burhan;
+package org.burhan.models;
 
 import jakarta.persistence.*;
 //import java.time.LocalDate;
@@ -16,6 +16,9 @@ public class Article {
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
             generator = "article_id_sequence")
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name="article_id", nullable=false)
     private Long            id;
     @Column(name="article_title", length=100, nullable=false)
     @Size(min = 1)

@@ -10,7 +10,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5332/articledb
+    url: jdbc:postgresql://localhost:5432/articledb
     username: postgres
     password: postgres
   jpa:

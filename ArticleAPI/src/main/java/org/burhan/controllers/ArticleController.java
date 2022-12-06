@@ -1,12 +1,16 @@
-package org.burhan;
+package org.burhan.controllers;
 
+import org.burhan.models.Article;
+import org.burhan.repositories.ArticleRepository;
+import org.burhan.services.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
-//import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/articles")
@@ -15,10 +19,10 @@ public class ArticleController {
     private final int COMPARE_MAX_DAY_COUNT = 7;
     private final int COMPARE_MIN_DAY_COUNT = 0;
 
-    record NewArticleRequest(String author,
-                             String content,
-                             String title,
-                             LocalDateTime date) {
+    public record NewArticleRequest(String author,
+                                    String content,
+                                    String title,
+                                    LocalDateTime date) {
         public String getAuthor() {
             return author;
         }
@@ -36,15 +40,22 @@ public class ArticleController {
     public ArticleController(ArticleRepository articleRepository, ArticleService articleService) {
         this.articleService = articleService;
     }
-    @GetMapping()
+    @GetMapping("/all")
     public List<Article> getArticleList() {
         return articleService.getArticleList();
+    }
+    @GetMapping("{pageNumber}")
+    public ResponseEntity<Map<String, Object>> getPagedArticleList(@PathVariable("pageNumber") int page) {
+        return articleService.getPagedArticleList(page);
+    }
+    @GetMapping()
+    public ResponseEntity<Map<String, Object>> getPagedArticleList() {
+        return articleService.getPagedArticleList();
     }
     @GetMapping("/statistics")
     public int getArticleCount() {
         List<Article> articleListForSort = articleService.getArticleList();
         LocalDateTime currentDateTime = LocalDateTime.now();
-
         int count = 0;
         for (Article article : articleListForSort) {
             if (Duration.between(article.getDate(), currentDateTime).toDays()
