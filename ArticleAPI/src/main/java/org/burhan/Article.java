@@ -1,7 +1,9 @@
 package org.burhan;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+//import java.time.LocalDate;
+import java.time.LocalDateTime;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="articles")
@@ -10,27 +12,28 @@ public class Article {
     @SequenceGenerator(
             name = "article_id_sequence",
             sequenceName = "article_id_sequence",
-            allocationSize = 1
-    )
+            allocationSize = 1)
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "article_id_sequence"
-    )
+            generator = "article_id_sequence")
     private Long            id;
-    
-    @Column(name="article_title", length=100, nullable=false, unique=false)
+    @Column(name="article_title", length=100, nullable=false)
+    @Size(min = 1)
     private String          title;
-    @Column(name="article_author", nullable=false, unique=false)
+    @Column(name="article_author", nullable=false)
+    @Size(min = 1)
     private String          author;
-    @Column(name="article_content", columnDefinition="TEXT", nullable=false, unique=false)
+    @Column(name="article_content", columnDefinition="TEXT", nullable=false)
+    @Size(min = 1)
     private String          content;
-    @Column(name="publsih_date", nullable=false, unique=false)
-    private LocalDate date;
+    @Column(name="publsih_date", nullable=false)
+    @Size(min = 1)
+    private LocalDateTime date;
     public Article() {}
     public Article(String title,
                    String author,
                    String content,
-                   LocalDate date) {
+                   LocalDateTime date) {
         this.title = title;
         this.author = author;
         this.content = content;
@@ -53,7 +56,7 @@ public class Article {
         return content;
     }
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
@@ -69,7 +72,7 @@ public class Article {
         this.content = content;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

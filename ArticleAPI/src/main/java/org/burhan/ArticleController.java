@@ -3,9 +3,9 @@ package org.burhan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.time.Duration;
-import java.time.LocalDate;
+//import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -18,7 +18,7 @@ public class ArticleController {
     record NewArticleRequest(String author,
                              String content,
                              String title,
-                             LocalDate date) {
+                             LocalDateTime date) {
         public String getAuthor() {
             return author;
         }
@@ -28,7 +28,7 @@ public class ArticleController {
         public String getTitle() {
             return title;
         }
-        public LocalDate getDate() {
+        public LocalDateTime getDate() {
             return date;
         }
     }
@@ -43,12 +43,13 @@ public class ArticleController {
     @GetMapping("/statistics")
     public int getArticleCount() {
         List<Article> articleListForSort = articleService.getArticleList();
-        LocalDate currentDateTime = LocalDate.now();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
         int count = 0;
         for (Article article : articleListForSort) {
-            if (Duration.between(article.getDate().atStartOfDay(), currentDateTime.atStartOfDay()).toDays()
-                    > COMPARE_MIN_DAY_COUNT
-                    && Duration.between(article.getDate().atStartOfDay(), currentDateTime.atStartOfDay()).toDays()
+            if (Duration.between(article.getDate(), currentDateTime).toDays()
+                    >= COMPARE_MIN_DAY_COUNT
+                    && Duration.between(article.getDate(), currentDateTime).toDays()
                     < COMPARE_MAX_DAY_COUNT) {
                 count++;
             }

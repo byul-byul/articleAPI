@@ -23,11 +23,9 @@ public class ArticleService {
         article.setDate(request.getDate());
         articleRepository.save(article);
     }
-
     public void deleteArticle(@PathVariable("articleId") Long id) {
         articleRepository.deleteById(id);
     }
-
     public void updateArticle(@PathVariable("articleId") Long id,
                               @RequestBody Article request) {
         Article article = articleRepository.getReferenceById(id);
