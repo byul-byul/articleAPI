@@ -15,10 +15,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/articles")
 public class ArticleController {
-    private final ArticleService articleService;
     private final int COMPARE_MAX_DAY_COUNT = 7;
     private final int COMPARE_MIN_DAY_COUNT = 0;
-
+    private final String DEFAULT_STATISTICS_MSG =   "Count of published articles " +
+                                                    "on daily bases for the " +
+                                                    COMPARE_MAX_DAY_COUNT +
+                                                    " days:\n";
+    private final ArticleService articleService;
     public record NewArticleRequest(String author,
                                     String content,
                                     String title,
@@ -53,7 +56,7 @@ public class ArticleController {
         return articleService.getPagedArticleList();
     }
     @GetMapping("/statistics")
-    public int getArticleCount() {
+    public String getArticleCount() {
         List<Article> articleListForSort = articleService.getArticleList();
         LocalDateTime currentDateTime = LocalDateTime.now();
         int count = 0;
@@ -65,7 +68,7 @@ public class ArticleController {
                 count++;
             }
         }
-        return count;
+        return (DEFAULT_STATISTICS_MSG + count);
     }
     @PostMapping()
     public void addArticle(@RequestBody NewArticleRequest request) {

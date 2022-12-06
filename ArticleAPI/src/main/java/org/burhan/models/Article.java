@@ -1,9 +1,8 @@
 package org.burhan.models;
 
 import jakarta.persistence.*;
-//import java.time.LocalDate;
 import java.time.LocalDateTime;
-import javax.validation.constraints.Size;
+//import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="articles")
@@ -21,16 +20,16 @@ public class Article {
     @Column(name="article_id", nullable=false)
     private Long            id;
     @Column(name="article_title", length=100, nullable=false)
-    @Size(min = 1)
+//    @Size(min = 1)
     private String          title;
     @Column(name="article_author", nullable=false)
-    @Size(min = 1)
+//    @Size(min = 1)
     private String          author;
     @Column(name="article_content", columnDefinition="TEXT", nullable=false)
-    @Size(min = 1)
+//    @Size(min = 1)
     private String          content;
     @Column(name="publsih_date", nullable=false)
-    @Size(min = 1)
+//    @Size(min = 1)
     private LocalDateTime date;
     public Article() {}
     public Article(String title,
@@ -42,43 +41,33 @@ public class Article {
         this.content = content;
         this.date = date;
     }
-
     public Long getId() {
         return id;
     }
-
     public String getTitle() {
         return title;
     }
-
     public String getAuthor() {
         return author;
     }
-
     public String getContent() {
         return content;
     }
-
     public LocalDateTime getDate() {
         return date;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
-
     public void setAuthor(String author) {
         this.author = author;
     }
-
     public void setContent(String content) {
         this.content = content;
     }
-
     public void setDate(LocalDateTime date) {
         this.date = date;
     }
-
     @Override
     public String toString() {
         return "Article{" +
