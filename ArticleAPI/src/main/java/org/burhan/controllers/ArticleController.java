@@ -1,5 +1,6 @@
 package org.burhan.controllers;
 
+import org.burhan.exceptions.ArticleAPIRequestException;
 import org.burhan.models.Article;
 import org.burhan.repositories.ArticleRepository;
 import org.burhan.services.ArticleService;
@@ -21,6 +22,10 @@ public class ArticleController {
                                                     "on daily bases for the " +
                                                     COMPARE_MAX_DAY_COUNT +
                                                     " days:\n";
+    private final String DEFAULT_EXCEPTION_MSG = """
+                    fields: "title", "author", "content", "date"
+                    are mandatory and cannot be blank
+                    as well as "date" field must be LocalDateTime format""";
     private final ArticleService articleService;
     public record NewArticleRequest(String author,
                                     String content,
@@ -45,62 +50,83 @@ public class ArticleController {
     }
     @GetMapping("/all")
     public List<Article> getArticleList() {
-        return articleService.getArticleList();
+        try {
+            return articleService.getArticleList();
+        } catch (Exception e) {
+            throw new ArticleAPIRequestException(e.toString() + "\n" + DEFAULT_EXCEPTION_MSG);
+        }
     }
     @GetMapping("{pageNumber}")
     public ResponseEntity<Map<String, Object>> getPagedArticleList(@PathVariable("pageNumber") int page) {
-        return articleService.getPagedArticleList(page);
+        try {
+            return articleService.getPagedArticleList(page);
+        } catch (Exception e) {
+            throw new ArticleAPIRequestException("invalid page number");
+        }
     }
     @GetMapping()
     public ResponseEntity<Map<String, Object>> getPagedArticleList() {
-        return articleService.getPagedArticleList();
+        try {
+            return articleService.getPagedArticleList();
+        } catch (Exception e) {
+            throw new ArticleAPIRequestException(e.toString() + "\n" + DEFAULT_EXCEPTION_MSG);
+        }
     }
     @GetMapping("/statistics")
     public String getArticleCount() {
-        List<Article> articleListForSort = articleService.getArticleList();
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        Integer[] articleCountByDays = new Integer[COMPARE_MAX_DAY_COUNT];
-        String msgTail = "";
-        int count = 0;
-//        for (Article article : articleListForSort) {
-//            if (Duration.between(article.getDate(), currentDateTime).toDays()
-//                    >= COMPARE_MIN_DAY_COUNT
-//                    && Duration.between(article.getDate(), currentDateTime).toDays()
-//                    < COMPARE_MAX_DAY_COUNT) {
-//                count++;
-//            }
-//        }
-//        return "" + count;
-        for (int i = 0; i < COMPARE_MAX_DAY_COUNT; i++) {
-            articleCountByDays[i] = 0;
-        }
-        for (Article article : articleListForSort) {
-            for (int i = 0; i < COMPARE_MAX_DAY_COUNT; i++){
-                if (Duration.between(article.getDate(), currentDateTime).toDays() == i) {
-                    articleCountByDays[i]++;
-                    count++;
-                    break ;
+        try {
+            List<Article> articleListForSort = articleService.getArticleList();
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            Integer[] articleCountByDays = new Integer[COMPARE_MAX_DAY_COUNT];
+            String msgTail = "";
+            int count = 0;
+            for (int i = 0; i < COMPARE_MAX_DAY_COUNT; i++) {
+                articleCountByDays[i] = 0;
+            }
+            for (Article article : articleListForSort) {
+                for (int i = 0; i < COMPARE_MAX_DAY_COUNT; i++) {
+                    if (Duration.between(article.getDate(), currentDateTime).toDays() == i) {
+                        articleCountByDays[i]++;
+                        count++;
+                        break;
+                    }
                 }
             }
-        }
-        for (int i = 0; i < COMPARE_MAX_DAY_COUNT; i++) {
-            msgTail += "at " + currentDateTime.toLocalDate().minusDays(i)
+            for (int i = 0; i < COMPARE_MAX_DAY_COUNT; i++) {
+                msgTail += "at " + currentDateTime.toLocalDate().minusDays(i)
                         + " was published: "
                         + articleCountByDays[i] + "\n";
+            }
+            msgTail += "total count of published articles: " + count;
+            return (DEFAULT_STATISTICS_MSG + msgTail);
+        } catch (Exception e) {
+            throw new ArticleAPIRequestException(e.toString() + "\n" + DEFAULT_EXCEPTION_MSG);
         }
-        msgTail += "total count of published articles: " + count;
-        return (DEFAULT_STATISTICS_MSG + msgTail);
     }
     @PostMapping()
     public void addArticle(@RequestBody NewArticleRequest request) {
-        articleService.addArticle(request);
+        try {
+            articleService.addArticle(request);
+        } catch (Exception e) {
+            throw new ArticleAPIRequestException(DEFAULT_EXCEPTION_MSG);
+        }
     }
     @DeleteMapping("{articleId}")
     public void deleteArticle(@PathVariable("articleId") Long id) {
-        articleService.deleteArticle(id);
+        try {
+            articleService.deleteArticle(id);
+        } catch (Exception e) {
+            throw new ArticleAPIRequestException("invalid articleId");
+        }
     }
     @PutMapping ("{articleId}")
     public void updateArticle(@PathVariable("articleId") Long id, @RequestBody Article request) {
-        articleService.updateArticle(id, request);
+        try {
+            articleService.updateArticle(id, request);
+        } catch (Exception e) {
+            throw new ArticleAPIRequestException("""
+                    invalid articleId or empty value for mandatory field.
+                    """ + DEFAULT_EXCEPTION_MSG);
+        }
     }
 }
