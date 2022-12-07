@@ -1,9 +1,9 @@
 package org.burhan.services;
 
 import org.burhan.controllers.ArticleController;
+import org.burhan.models.ArticlePost;
 import org.burhan.repositories.ArticleRepository;
 import org.burhan.models.Article;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,7 @@ public class ArticleService {
         return articleRepository.findAll();
     }
     public ResponseEntity<Map<String, Object>> getPagedArticleList(int page) {
+        page--;
         Pageable paging = PageRequest.of(page, ARTICLE_NUMBER_IN_PAGE);
         return getMapResponseEntity(paging);
     }
@@ -42,14 +43,16 @@ public class ArticleService {
 
         Map<String, Object> response = new HashMap<>();
         response.put("articles", articlList);
-        response.put("currentPage", pagedArticles.getNumber());
+        response.put("currentPage", pagedArticles.getNumber() + 1);
         response.put("totalItems", pagedArticles.getTotalElements());
         response.put("totalPages", pagedArticles.getTotalPages());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    public void addArticle(@RequestBody ArticleController.NewArticleRequest request) {
-        Article article = new Article();
+//    public void addArticle(@RequestBody ArticleController.NewArticleRequest request) {
+    public void addArticle(@RequestBody ArticlePost request) {
+
+    Article article = new Article();
         article.setAuthor(request.getAuthor());
         article.setContent(request.getContent());
         article.setTitle(request.getTitle());

@@ -2,12 +2,12 @@ package org.burhan.controllers;
 
 import org.burhan.exceptions.ArticleAPIRequestException;
 import org.burhan.models.Article;
+import org.burhan.models.ArticlePost;
 import org.burhan.repositories.ArticleRepository;
 import org.burhan.services.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,23 +27,24 @@ public class ArticleController {
                     are mandatory and cannot be blank
                     as well as "date" field must be LocalDateTime format""";
     private final ArticleService articleService;
-    public record NewArticleRequest(String author,
-                                    String content,
-                                    String title,
-                                    LocalDateTime date) {
-        public String getAuthor() {
-            return author;
-        }
-        public String getContent() {
-            return content;
-        }
-        public String getTitle() {
-            return title;
-        }
-        public LocalDateTime getDate() {
-            return date;
-        }
-    }
+//    public static ArticlePost NewArticleRequest;
+//    public record NewArticleRequest(String author,
+//                                    String content,
+//                                    String title,
+//                                    LocalDateTime date) {
+//        public String getAuthor() {
+//            return author;
+//        }
+//        public String getContent() {
+//            return content;
+//        }
+//        public String getTitle() {
+//            return title;
+//        }
+//        public LocalDateTime getDate() {
+//            return date;
+//        }
+//    }
     @Autowired
     public ArticleController(ArticleRepository articleRepository, ArticleService articleService) {
         this.articleService = articleService;
@@ -104,7 +105,8 @@ public class ArticleController {
         }
     }
     @PostMapping()
-    public void addArticle(@RequestBody NewArticleRequest request) {
+//    public void addArticle(@RequestBody NewArticleRequest request) {
+    public void addArticle(@RequestBody ArticlePost request) {
         try {
             articleService.addArticle(request);
         } catch (Exception e) {
