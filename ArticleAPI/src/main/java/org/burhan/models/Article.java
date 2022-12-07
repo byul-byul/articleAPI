@@ -2,7 +2,6 @@ package org.burhan.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-//import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="articles")
@@ -15,21 +14,15 @@ public class Article {
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
             generator = "article_id_sequence")
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name="article_id", nullable=false)
     private Long            id;
     @Column(name="article_title", length=100, nullable=false)
-//    @Size(min = 1)
     private String          title;
     @Column(name="article_author", nullable=false)
-//    @Size(min = 1)
     private String          author;
     @Column(name="article_content", columnDefinition="TEXT", nullable=false)
-//    @Size(min = 1)
     private String          content;
     @Column(name="publsih_date", nullable=false)
-//    @Size(min = 1)
     private LocalDateTime date;
     public Article() {}
     public Article(String title,

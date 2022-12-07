@@ -16,16 +16,4 @@ public class ArticleAPIException {
         this.httpStatus = httpStatus;
         this.zonedDateTime = zonedDateTime;
     }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
-
-    public ZonedDateTime getZonedDateTime() {
-        return zonedDateTime;
-    }
 }
