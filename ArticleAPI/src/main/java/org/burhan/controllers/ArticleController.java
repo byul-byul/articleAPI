@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/articles")
+@RequestMapping("/api/v1")
 public class ArticleController {
     private final ArticleService articleService;
     private final static String DEFAULT_EXCEPTION_MSG = """
@@ -29,7 +29,7 @@ public class ArticleController {
     public ArticleController(ArticleService articleService) {
         this.articleService = articleService;
     }
-    @GetMapping("/all")
+    @GetMapping("/user/articles/all")
     public List<Article> getArticleList() {
         try {
             return articleService.getArticleList();
@@ -37,7 +37,7 @@ public class ArticleController {
             throw new ApiRequestException(e.getMessage());
         }
     }
-    @GetMapping("{pageNumber}")
+    @GetMapping("/user/articles/{pageNumber}")
     public ResponseEntity<Map<String, Object>>
             getPagedArticleList(@PathVariable("pageNumber") int page) {
         try {
@@ -46,7 +46,7 @@ public class ArticleController {
             throw new ApiRequestException("invalid page number: " + e.getMessage());
         }
     }
-    @GetMapping()
+    @GetMapping("/user/articles")
     public ResponseEntity<Map<String, Object>> getPagedArticleList() {
         try {
             return articleService.getPagedArticleList();
@@ -54,7 +54,7 @@ public class ArticleController {
             throw new ApiRequestException(e.getMessage());
         }
     }
-    @GetMapping("/statistics")
+    @GetMapping("/admin/statistics")
     public String getArticleCountByCertainDays() {
         try {
             return articleService.getArticleCountByCertainDays();
@@ -62,7 +62,7 @@ public class ArticleController {
             throw new ApiRequestException(e.getMessage());
         }
     }
-    @PostMapping()
+    @PostMapping("/user/articles")
     public String addArticle(@RequestBody ArticlePost request) {
         try {
             return String.format("New article with id=%d was created",
@@ -71,7 +71,7 @@ public class ArticleController {
             throw new ApiRequestException(formResponseMessage(e));
         }
     }
-    @DeleteMapping("{articleId}")
+    @DeleteMapping("/admin/articles/{articleId}")
     public String deleteArticle(@PathVariable("articleId") Long id) {
         try {
             articleService.deleteArticle(id);
@@ -80,11 +80,11 @@ public class ArticleController {
             throw new ApiRequestException("invalid articleId");
         }
     }
-    @DeleteMapping()
+    @DeleteMapping("/admin/articles")
     public void deleteArticle() {
         throw new ApiRequestException("you must provide an articleId");
     }
-    @PutMapping ("{articleId}")
+    @PutMapping ("/user/articles/{articleId}")
     public String updateArticle(@PathVariable("articleId") Long id,
                               @RequestBody Article request) {
         try {
@@ -94,7 +94,7 @@ public class ArticleController {
             throw new ApiRequestException(formResponseMessage(e));
         }
     }
-    @PutMapping()
+    @PutMapping("/user/articles")
     public void updateArticle() {
         throw new ApiRequestException("you must provide an articleId");
     }
