@@ -49,6 +49,9 @@ public class Article {
     public LocalDateTime getDate() {
         return date;
     }
+    public void setId(Long id) {
+        this.id = id;
+    }
     public void setTitle(String title) {
         this.title = title;
     }
@@ -71,4 +74,6 @@ public class Article {
                 ", date=" + date +
                 '}';
     }
+
+
 }

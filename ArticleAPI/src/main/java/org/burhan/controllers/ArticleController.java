@@ -1,6 +1,6 @@
 package org.burhan.controllers;
 
-import org.burhan.exceptions.ArticleAPIRequestException;
+import org.burhan.exceptions.ApiRequestException;
 import org.burhan.models.Article;
 import org.burhan.models.ArticlePost;
 import org.burhan.services.ArticleService;
@@ -14,12 +14,16 @@ import java.util.Map;
 @RequestMapping("/api/v1/articles")
 public class ArticleController {
     private final ArticleService articleService;
-    private String formResponseMessage(Exception e) {
-        String DEFAULT_EXCEPTION_MSG = """
-                fields: 'title', 'author', 'content', 'date'
+    private final static String DEFAULT_EXCEPTION_MSG = """
+                fields:
+                - 'title'
+                - 'author'
+                - 'content'
+                - 'date'
                 are mandatory and cannot be blank
                 as well as 'date' field must be LocalDateTime format""";
-        return DEFAULT_EXCEPTION_MSG + '\n' + e;
+    private String formResponseMessage(Exception e) {
+        return DEFAULT_EXCEPTION_MSG + '\n' + e.getMessage();
     }
     @Autowired
     public ArticleController(ArticleService articleService) {
@@ -30,15 +34,16 @@ public class ArticleController {
         try {
             return articleService.getArticleList();
         } catch (Exception e) {
-            throw new ArticleAPIRequestException(e.toString());
+            throw new ApiRequestException(e.getMessage());
         }
     }
     @GetMapping("{pageNumber}")
-    public ResponseEntity<Map<String, Object>> getPagedArticleList(@PathVariable("pageNumber") int page) {
+    public ResponseEntity<Map<String, Object>>
+            getPagedArticleList(@PathVariable("pageNumber") int page) {
         try {
             return articleService.getPagedArticleList(page);
-        } catch (Exception exception) {
-            throw new ArticleAPIRequestException("invalid page number");
+        } catch (Exception e) {
+            throw new ApiRequestException("invalid page number: " + e.getMessage());
         }
     }
     @GetMapping()
@@ -46,7 +51,7 @@ public class ArticleController {
         try {
             return articleService.getPagedArticleList();
         } catch (Exception e) {
-            throw new ArticleAPIRequestException(e.toString());
+            throw new ApiRequestException(e.getMessage());
         }
     }
     @GetMapping("/statistics")
@@ -54,31 +59,43 @@ public class ArticleController {
         try {
             return articleService.getArticleCountByCertainDays();
         } catch (Exception e) {
-            throw new ArticleAPIRequestException(e.toString());
+            throw new ApiRequestException(e.getMessage());
         }
     }
     @PostMapping()
-    public void addArticle(@RequestBody ArticlePost request) {
+    public String addArticle(@RequestBody ArticlePost request) {
         try {
-            articleService.addArticle(request);
+            return String.format("New article with id=%d was created",
+                                articleService.addArticle(request));
         } catch (Exception e) {
-            throw new ArticleAPIRequestException(formResponseMessage(e));
+            throw new ApiRequestException(formResponseMessage(e));
         }
     }
     @DeleteMapping("{articleId}")
-    public void deleteArticle(@PathVariable("articleId") Long id) {
+    public String deleteArticle(@PathVariable("articleId") Long id) {
         try {
             articleService.deleteArticle(id);
+            return String.format("Article with id=%d was removed", id);
         } catch (Exception e) {
-            throw new ArticleAPIRequestException("invalid articleId");
+            throw new ApiRequestException("invalid articleId");
         }
     }
+    @DeleteMapping()
+    public void deleteArticle() {
+        throw new ApiRequestException("you must provide an articleId");
+    }
     @PutMapping ("{articleId}")
-    public void updateArticle(@PathVariable("articleId") Long id, @RequestBody Article request) {
+    public String updateArticle(@PathVariable("articleId") Long id,
+                              @RequestBody Article request) {
         try {
             articleService.updateArticle(id, request);
+            return String.format("Article with id=%d was updated", id);
         } catch (Exception e) {
-            throw new ArticleAPIRequestException(formResponseMessage(e));
+            throw new ApiRequestException(formResponseMessage(e));
         }
+    }
+    @PutMapping()
+    public void updateArticle() {
+        throw new ApiRequestException("you must provide an articleId");
     }
 }

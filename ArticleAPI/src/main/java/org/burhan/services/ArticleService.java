@@ -1,10 +1,10 @@
 package org.burhan.services;
 
+import org.burhan.exceptions.ApiRequestException;
 import org.burhan.models.ArticlePost;
 import org.burhan.repositories.ArticleRepository;
 import org.burhan.models.Article;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.HashMap;
@@ -21,14 +21,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public class ArticleService {
-    private final int COMPARE_MAX_DAY_COUNT = 7;
-    private final String DEFAULT_STATISTICS_MSG = """
+    private final static int STATISTICS_DAY_COUNT = 7;
+    private final static int ARTICLE_NUMBER_IN_PAGE = 5;
+    private final static int DEFAULT_PAGE_NUMBER = 0;
+    private final static String DEFAULT_STATISTICS_MSG = """
                                 count of published articles
-                                on daily bases for the""" + " "
-                                + COMPARE_MAX_DAY_COUNT +
-                                " days:\n";
-    private final int ARTICLE_NUMBER_IN_PAGE = 5;
-    private final int DEFAULT_PAGE_NUMBER = 0;
+                                on daily bases for the %d days:
+                                """;
     private final ArticleRepository articleRepository;
     public ArticleService(ArticleRepository articleRepository) {
         this.articleRepository = articleRepository;
@@ -48,38 +47,45 @@ public class ArticleService {
     public String getArticleCountByCertainDays() {
         List<Article> articleListForSort = this.getArticleList();
         LocalDateTime currentDateTime = LocalDateTime.now();
-        Integer[] articleCountByDays = new Integer[COMPARE_MAX_DAY_COUNT];
-        String msgTail = "";
+        Integer[] articleCountByDays = new Integer[STATISTICS_DAY_COUNT];
+        StringBuilder msgTail = new StringBuilder();
         int count = 0;
-        for (int i = 0; i < COMPARE_MAX_DAY_COUNT; i++) {
+        for (int i = 0; i < STATISTICS_DAY_COUNT; i++) {
             articleCountByDays[i] = 0;
         }
         for (Article article : articleListForSort) {
             if (Period.between(article.getDate().toLocalDate(),
                                 currentDateTime.toLocalDate()).getDays()
-                                >= COMPARE_MAX_DAY_COUNT) {
+                                >= STATISTICS_DAY_COUNT) {
                 continue;
             }
             System.out.println();
-            for (int i = 0; i < COMPARE_MAX_DAY_COUNT; i++) {
-                if (Period.between(article.getDate().toLocalDate(), currentDateTime.toLocalDate()).getDays() == i) {
+            for (int i = 0; i < STATISTICS_DAY_COUNT; i++) {
+                if (Period.between(article.getDate()
+                        .toLocalDate(), currentDateTime
+                        .toLocalDate()).getDays() == i) {
                     articleCountByDays[i]++;
                     count++;
                     break;
                 }
             }
         }
-        for (int i = 0; i < COMPARE_MAX_DAY_COUNT; i++) {
-            msgTail += "at " + currentDateTime.toLocalDate().minusDays(i)
-                    + " was published: "
-                    + articleCountByDays[i] + "\n";
+        for (int i = 0; i < STATISTICS_DAY_COUNT; i++) {
+            msgTail.append("at ").append(currentDateTime
+                                .toLocalDate().minusDays(i))
+                                .append(" was published: ")
+                                .append(articleCountByDays[i])
+                                .append("\n");
         }
-        msgTail += "total count of published articles: " + count;
-        return (DEFAULT_STATISTICS_MSG + msgTail);
+        msgTail.append("total count of published articles: ").append(count);
+        return String.format(DEFAULT_STATISTICS_MSG, STATISTICS_DAY_COUNT) + msgTail;
     }
     private ResponseEntity<Map<String, Object>> getMapResponseEntity(Pageable paging) {
         List<Article> articlList;
         Page<Article> pagedArticles = articleRepository.findAll(paging);
+        if (pagedArticles.getTotalPages() < pagedArticles.getNumber() + 1) {
+            throw new ApiRequestException("total pages count = " + pagedArticles.getTotalPages());
+        }
         articlList = pagedArticles.getContent();
 
         Map<String, Object> response = new HashMap<>();
@@ -90,14 +96,13 @@ public class ArticleService {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    public void addArticle(@RequestBody ArticlePost request) {
-
+    public Long addArticle(@RequestBody ArticlePost request) {
     Article article = new Article();
         article.setAuthor(request.getAuthor());
         article.setContent(request.getContent());
         article.setTitle(request.getTitle());
         article.setDate(request.getDate());
-        articleRepository.save(article);
+        return articleRepository.save(article).getId();
     }
     public void deleteArticle(@PathVariable("articleId") Long id) {
         articleRepository.deleteById(id);
@@ -105,6 +110,7 @@ public class ArticleService {
     public void updateArticle(@PathVariable("articleId") Long id,
                               @RequestBody Article request) {
         Article article = articleRepository.getReferenceById(id);
+        article.setId(id);
         article.setAuthor(request.getAuthor());
         article.setContent(request.getContent());
         article.setTitle(request.getTitle());
