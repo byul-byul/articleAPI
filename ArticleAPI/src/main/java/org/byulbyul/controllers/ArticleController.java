@@ -1,9 +1,9 @@
-package org.burhan.controllers;
+package org.byulbyul.controllers;
 
-import org.burhan.exceptions.ApiRequestException;
-import org.burhan.models.Article;
-import org.burhan.models.ArticlePost;
-import org.burhan.services.ArticleService;
+import org.byulbyul.exceptions.ApiRequestException;
+import org.byulbyul.models.Article;
+import org.byulbyul.models.ArticlePost;
+import org.byulbyul.services.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +29,15 @@ public class ArticleController {
     public ArticleController(ArticleService articleService) {
         this.articleService = articleService;
     }
-    @GetMapping("/user/articles/all")
+    @GetMapping("/articles")
+    public ResponseEntity<Map<String, Object>> getPagedArticleList() {
+        try {
+            return articleService.getPagedArticleList();
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+    @GetMapping("/articles/all")
     public List<Article> getArticleList() {
         try {
             return articleService.getArticleList();
@@ -37,7 +45,7 @@ public class ArticleController {
             throw new ApiRequestException(e.getMessage());
         }
     }
-    @GetMapping("/user/articles/{pageNumber}")
+    @GetMapping("/articles/{pageNumber}")
     public ResponseEntity<Map<String, Object>>
             getPagedArticleList(@PathVariable("pageNumber") int page) {
         try {
@@ -46,15 +54,7 @@ public class ArticleController {
             throw new ApiRequestException("invalid page number: " + e.getMessage());
         }
     }
-    @GetMapping("/user/articles")
-    public ResponseEntity<Map<String, Object>> getPagedArticleList() {
-        try {
-            return articleService.getPagedArticleList();
-        } catch (Exception e) {
-            throw new ApiRequestException(e.getMessage());
-        }
-    }
-    @GetMapping("/admin/statistics")
+    @GetMapping("/statistics")
     public String getArticleCountByCertainDays() {
         try {
             return articleService.getArticleCountByCertainDays();
@@ -62,7 +62,7 @@ public class ArticleController {
             throw new ApiRequestException(e.getMessage());
         }
     }
-    @PostMapping("/user/articles")
+    @PostMapping("/articles")
     public String addArticle(@RequestBody ArticlePost request) {
         try {
             return String.format("New article with id=%d was created",
@@ -71,7 +71,11 @@ public class ArticleController {
             throw new ApiRequestException(formResponseMessage(e));
         }
     }
-    @DeleteMapping("/admin/articles/{articleId}")
+    @DeleteMapping("/articles")
+    public void deleteArticle() {
+        throw new ApiRequestException("you must provide an articleId");
+    }
+    @DeleteMapping("/articles/{articleId}")
     public String deleteArticle(@PathVariable("articleId") Long id) {
         try {
             articleService.deleteArticle(id);
@@ -80,11 +84,11 @@ public class ArticleController {
             throw new ApiRequestException("invalid articleId");
         }
     }
-    @DeleteMapping("/admin/articles")
-    public void deleteArticle() {
+    @PutMapping("/articles")
+    public void updateArticle() {
         throw new ApiRequestException("you must provide an articleId");
     }
-    @PutMapping ("/user/articles/{articleId}")
+    @PutMapping ("/articles/{articleId}")
     public String updateArticle(@PathVariable("articleId") Long id,
                               @RequestBody Article request) {
         try {
@@ -93,9 +97,5 @@ public class ArticleController {
         } catch (Exception e) {
             throw new ApiRequestException(formResponseMessage(e));
         }
-    }
-    @PutMapping("/user/articles")
-    public void updateArticle() {
-        throw new ApiRequestException("you must provide an articleId");
     }
 }

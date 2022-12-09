@@ -1,4 +1,4 @@
-package org.burhan.exceptions;
+package org.byulbyul.exceptions;
 
 import org.springframework.http.HttpStatus;
 

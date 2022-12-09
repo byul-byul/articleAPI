@@ -3,7 +3,7 @@ server:
   ssl:
     enabled: true
     key-alias: spring-https
-    key-store: classpath:burhan.jks
+    key-store: classpath:byulbyul.jks
     key-store-type: JKS
     key-password: 123456
     key-store-password: 123456

@@ -1,4 +1,4 @@
-package org.burhan;
+package org.byulbyul;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,9 +1,9 @@
-package org.burhan.services;
+package org.byulbyul.services;
 
-import org.burhan.exceptions.ApiRequestException;
-import org.burhan.models.ArticlePost;
-import org.burhan.repositories.ArticleRepository;
-import org.burhan.models.Article;
+import org.byulbyul.exceptions.ApiRequestException;
+import org.byulbyul.models.ArticlePost;
+import org.byulbyul.repositories.ArticleRepository;
+import org.byulbyul.models.Article;
 
 import java.time.LocalDateTime;
 import java.time.Period;

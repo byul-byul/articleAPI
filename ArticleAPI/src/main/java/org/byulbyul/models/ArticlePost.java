@@ -1,4 +1,4 @@
-package org.burhan.models;
+package org.byulbyul.models;
 
 import java.time.LocalDateTime;
 
