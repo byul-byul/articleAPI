@@ -29,7 +29,7 @@ public class ArticleController {
     public ArticleController(ArticleService articleService) {
         this.articleService = articleService;
     }
-    @GetMapping("/articles")
+    @GetMapping({"/articles", "/articles/"})
     public ResponseEntity<Map<String, Object>> getPagedArticleList() {
         try {
             return articleService.getPagedArticleList();
@@ -37,7 +37,7 @@ public class ArticleController {
             throw new ApiRequestException(e.getMessage());
         }
     }
-    @GetMapping("/articles/all")
+    @GetMapping({"/articles/all", "/articles/all/"})
     public List<Article> getArticleList() {
         try {
             return articleService.getArticleList();
@@ -45,7 +45,7 @@ public class ArticleController {
             throw new ApiRequestException(e.getMessage());
         }
     }
-    @GetMapping("/articles/{pageNumber}")
+    @GetMapping({"/articles/{pageNumber}", "/articles/{pageNumber}/"})
     public ResponseEntity<Map<String, Object>>
             getPagedArticleList(@PathVariable("pageNumber") int page) {
         try {
@@ -54,7 +54,7 @@ public class ArticleController {
             throw new ApiRequestException("invalid page number: " + e.getMessage());
         }
     }
-    @GetMapping("/statistics")
+    @GetMapping({"/statistics"})
     public String getArticleCountByCertainDays() {
         try {
             return articleService.getArticleCountByCertainDays();
@@ -62,7 +62,7 @@ public class ArticleController {
             throw new ApiRequestException(e.getMessage());
         }
     }
-    @PostMapping("/articles")
+    @PostMapping({"/articles", "/articles/"})
     public String addArticle(@RequestBody ArticlePost request) {
         try {
             return String.format("New article with id=%d was created",
@@ -71,11 +71,11 @@ public class ArticleController {
             throw new ApiRequestException(formResponseMessage(e));
         }
     }
-    @DeleteMapping("/articles")
+    @DeleteMapping({"/articles", "/articles/"})
     public void deleteArticle() {
         throw new ApiRequestException("you must provide an articleId");
     }
-    @DeleteMapping("/articles/{articleId}")
+    @DeleteMapping({"/articles/{articleId}", "/articles/{articleId}/"})
     public String deleteArticle(@PathVariable("articleId") Long id) {
         try {
             articleService.deleteArticle(id);
@@ -84,11 +84,11 @@ public class ArticleController {
             throw new ApiRequestException("invalid articleId");
         }
     }
-    @PutMapping("/articles")
+    @PutMapping({"/articles", "/articles/"})
     public void updateArticle() {
         throw new ApiRequestException("you must provide an articleId");
     }
-    @PutMapping ("/articles/{articleId}")
+    @PutMapping ({"/articles/{articleId}", "/articles/{articleId}/"})
     public String updateArticle(@PathVariable("articleId") Long id,
                               @RequestBody Article request) {
         try {

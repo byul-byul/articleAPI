@@ -25,7 +25,7 @@ public class SecurityConfiguration {
                     authConfig.requestMatchers(HttpMethod.POST, "/api/v1/articles*").hasRole("USER");
                     authConfig.requestMatchers(HttpMethod.PUT, "/api/v1/articles*").hasRole("USER");
                     authConfig.requestMatchers(HttpMethod.DELETE, "/api/v1/articles*").hasRole("USER");
-                    authConfig.requestMatchers(HttpMethod.GET, "/api/v1/statistics*").hasRole("ADMIN");
+                    authConfig.requestMatchers(HttpMethod.GET, "/api/v1/statistics").hasRole("ADMIN");
                     authConfig.anyRequest().authenticated();
                 })
                 .formLogin(withDefaults()) // Login with browser and Build in Form

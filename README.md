@@ -4,9 +4,9 @@ article API application
 see task.txt for task details
 
 Prerequisites:
-	- install docker;
-	- create postgres db named 'articledb' with all grants for user 'postgres' with password 'postgres';
-	- manually run provided data.sql for initial data after starting application;
+	- docker;
+	- postgres db named 'articledb' with all grants for user 'postgres' with password 'postgres';
+	- manually execution provided data.sql for initial data after starting application;
 
 Overview:
 1. CRUD: (localhost:8080/api/v1)
@@ -25,12 +25,8 @@ Overview:
 	2.4 Framework: Spring Boot 3.0.0;
 
 3. Current Troubles:
-	3.1 spring-boot-starter-security & SecurityConfiguration class are disabled:
-		if enable, than POST, DELETE and PUT methods are not working as I expected.
-		I am trying to fix it;
-	3.2 Tests are also in process right now;
-	3.3 https enabled and uses self-signed-sertificate: byulbyul.jks
-	3.4 initial execute ./resources/data.sql => need to execute data.sql manually;
-	3.5 Annotation @Size(min=1) does not work as I expected, so I use 'CONSTRAINT' at db side (data.sql);
-	3.6 Will try to add and configure volume for saving db data from docker;
+	3.1 Tests are in process right now;
+	3.2 initial execute ./resources/data.sql => need to execute data.sql manually;
+	3.3 Annotation @Size(min=1) does not work as I expected, so I use 'CONSTRAINT' at db side (data.sql);
+	3.4 Will try to add and configure volume for saving db data from docker;
 
