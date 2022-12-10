@@ -5,11 +5,14 @@ import org.byulbyul.models.ArticlePost;
 import org.byulbyul.repositories.ArticleRepository;
 import org.byulbyul.models.Article;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +32,32 @@ public class ArticleService {
                                 on daily bases for the %d days:
                                 """;
     private final ArticleRepository articleRepository;
+    private int isDurationDay(LocalDate date1, LocalDate date2, int dayCount) {
+        return Integer.compare(Period.between(date1, date2).getDays(), dayCount);
+    }
+    private Integer[] calculateArticleCountByDays(List<Article> articleList,
+                                                  LocalDateTime curTime) {
+        Integer[] calculated = new Integer[STATISTICS_DAY_COUNT];
+        for (int i = 0; i < STATISTICS_DAY_COUNT; i++) {
+            calculated[i] = 0;
+        }
+        for (Article article : articleList) {
+            if (isDurationDay(article.getDate().toLocalDate(),
+                    curTime.toLocalDate(),
+                    STATISTICS_DAY_COUNT) >= 0) {
+                continue;
+            }
+            System.out.println();
+            for (int i = 0; i < STATISTICS_DAY_COUNT; i++) {
+                if (isDurationDay(article.getDate().toLocalDate(),
+                        curTime.toLocalDate(), i) == 0) {
+                    calculated[i]++;
+                    break;
+                }
+            }
+        }
+        return calculated;
+    }
     public ArticleService(ArticleRepository articleRepository) {
         this.articleRepository = articleRepository;
     }
@@ -47,35 +76,19 @@ public class ArticleService {
     public String getArticleCountByCertainDays() {
         List<Article> articleListForSort = this.getArticleList();
         LocalDateTime currentDateTime = LocalDateTime.now();
-        Integer[] articleCountByDays = new Integer[STATISTICS_DAY_COUNT];
         StringBuilder msgTail = new StringBuilder();
+        Integer[] articleCountByDays = calculateArticleCountByDays(
+                                        articleListForSort,
+                                        currentDateTime);
         int count = 0;
-        for (int i = 0; i < STATISTICS_DAY_COUNT; i++) {
-            articleCountByDays[i] = 0;
-        }
-        for (Article article : articleListForSort) {
-            if (Period.between(article.getDate().toLocalDate(),
-                                currentDateTime.toLocalDate()).getDays()
-                                >= STATISTICS_DAY_COUNT) {
-                continue;
-            }
-            System.out.println();
-            for (int i = 0; i < STATISTICS_DAY_COUNT; i++) {
-                if (Period.between(article.getDate()
-                        .toLocalDate(), currentDateTime
-                        .toLocalDate()).getDays() == i) {
-                    articleCountByDays[i]++;
-                    count++;
-                    break;
-                }
-            }
-        }
+
         for (int i = 0; i < STATISTICS_DAY_COUNT; i++) {
             msgTail.append("at ").append(currentDateTime
                                 .toLocalDate().minusDays(i))
                                 .append(" was published: ")
                                 .append(articleCountByDays[i])
                                 .append("\n");
+            count += articleCountByDays[i];
         }
         msgTail.append("total count of published articles: ").append(count);
         return String.format(DEFAULT_STATISTICS_MSG, STATISTICS_DAY_COUNT) + msgTail;
@@ -93,15 +106,14 @@ public class ArticleService {
         response.put("currentPage", pagedArticles.getNumber() + 1);
         response.put("totalItems", pagedArticles.getTotalElements());
         response.put("totalPages", pagedArticles.getTotalPages());
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     public Long addArticle(@RequestBody ArticlePost request) {
-    Article article = new Article();
-        article.setAuthor(request.getAuthor());
-        article.setContent(request.getContent());
-        article.setTitle(request.getTitle());
-        article.setDate(request.getDate());
+        Article article = new Article();
+        article.setAuthor(request.author());
+        article.setContent(request.content());
+        article.setTitle(request.title());
+        article.setDate(request.date());
         return articleRepository.save(article).getId();
     }
     public void deleteArticle(@PathVariable("articleId") Long id) {

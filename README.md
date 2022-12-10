@@ -6,7 +6,7 @@ see task.txt for task details
 Prerequisites:
 	- docker;
 	- postgres db named 'articledb' with all grants for user 'postgres' with password 'postgres';
-	- manually execution provided data.sql for initial data after starting application;
+	- manually executed provided data.sql after starting application (for initial db populating);
 
 Overview:
 1. CRUD: (localhost:8080/api/v1)
@@ -28,5 +28,5 @@ Overview:
 	3.1 Tests are in process right now;
 	3.2 initial execute ./resources/data.sql => need to execute data.sql manually;
 	3.3 Annotation @Size(min=1) does not work as I expected, so I use 'CONSTRAINT' at db side (data.sql);
-	3.4 Will try to add and configure volume for saving db data from docker;
+	3.4 Need to configure volume for saving db data from docker.
 

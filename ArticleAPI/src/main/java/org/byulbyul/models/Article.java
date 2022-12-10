@@ -74,6 +74,4 @@ public class Article {
                 ", date=" + date +
                 '}';
     }
-
-
 }

@@ -15,15 +15,12 @@ import java.util.Map;
 public class ArticleController {
     private final ArticleService articleService;
     private final static String DEFAULT_EXCEPTION_MSG = """
-                fields:
-                - 'title'
-                - 'author'
-                - 'content'
-                - 'date'
-                are mandatory and cannot be blank
-                as well as 'date' field must be LocalDateTime format""";
+                            fields: 'title', 'author', content', 'date'
+                            are mandatory and cannot be blank
+                            as well as 'date' field must be LocalDateTime format
+                            """;
     private String formResponseMessage(Exception e) {
-        return DEFAULT_EXCEPTION_MSG + '\n' + e.getMessage();
+        return DEFAULT_EXCEPTION_MSG + "\n" + e.getMessage();
     }
     @Autowired
     public ArticleController(ArticleService articleService) {
