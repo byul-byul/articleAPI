@@ -11,7 +11,6 @@ import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,8 +27,7 @@ public class ArticleService {
     private final static int ARTICLE_NUMBER_IN_PAGE = 5;
     private final static int DEFAULT_PAGE_NUMBER = 0;
     private final static String DEFAULT_STATISTICS_MSG = """
-                                count of published articles
-                                on daily bases for the %d days:
+                                count of published articles on daily bases for the %d days:
                                 """;
     private final ArticleRepository articleRepository;
     private int isDurationDay(LocalDate date1, LocalDate date2, int dayCount) {
@@ -74,13 +72,13 @@ public class ArticleService {
         return getMapResponseEntity(paging);
     }
     public String getArticleCountByCertainDays() {
+        int count = 0;
         List<Article> articleListForSort = this.getArticleList();
         LocalDateTime currentDateTime = LocalDateTime.now();
         StringBuilder msgTail = new StringBuilder();
         Integer[] articleCountByDays = calculateArticleCountByDays(
                                         articleListForSort,
                                         currentDateTime);
-        int count = 0;
 
         for (int i = 0; i < STATISTICS_DAY_COUNT; i++) {
             msgTail.append("at ").append(currentDateTime
